@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rootline — Monitoring &amp; maintenance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #142016;
+    --surface: #1D2E20;
+    --surface-2: #24352A;
+    --text: #EDE9DD;
+    --text-dim: #B9C2B4;
+    --gold: #D9A441;
+    --gold-dim: #C4923A;
+    --leaf: #7FA65C;
+    --soil: #8B6142;
+    --line: rgba(237, 233, 221, 0.12);
+    --error: #C97B63;
+    --overdue: #C97B63;
+    --serif: 'Fraunces', serif;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 32px 100px; }
+
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 0;
+  }
+
+  .logo { font-family: var(--serif); font-size: 22px; font-weight: 600; }
+  .logo span { color: var(--leaf); }
+  .logo a { text-decoration: none; }
+
+  .back-link { font-size: 14px; color: var(--text-dim); text-decoration: none; }
+
+  h1 { font-family: var(--serif); font-size: 36px; font-weight: 500; margin-top: 12px; }
+
+  .subtitle { margin-top: 8px; color: var(--text-dim); font-size: 15px; }
+
+  .status-msg { margin-top: 24px; color: var(--text-dim); font-size: 14px; }
+
+  .task-section { margin-top: 36px; }
+
+  .task-section .section-title {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .task-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .task-card.overdue { border-color: var(--overdue); }
+
+  .task-card .task-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .task-card .task-main { display: flex; align-items: center; gap: 14px; flex: 1; min-width: 0; }
+
+  .task-card .task-name { font-weight: 500; font-size: 15px; }
+
+  .task-card .task-meta { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+
+  .task-card .task-meta.overdue-text { color: var(--overdue); }
+
+  .btn {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .btn-primary { background: var(--gold); color: #1A1408; }
+  .btn-primary:hover { background: var(--gold-dim); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--line); }
+
+  .empty-state {
+    margin-top: 32px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 32px 28px;
+    text-align: center;
+  }
+
+  .empty-state p { color: var(--text-dim); font-size: 15px; margin-bottom: 18px; }
+
+  /* ---------- CARE SCORE ---------- */
+  .care-score-card {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 26px 28px;
+    margin-top: 28px;
+    align-items: center;
+    gap: 28px;
+  }
+
+  .care-score-card.active { display: flex; }
+
+  .care-ring-wrap { position: relative; width: 110px; height: 110px; flex-shrink: 0; }
+
+  .care-ring-wrap svg { transform: rotate(-90deg); }
+
+  .care-ring-bg { fill: none; stroke: var(--surface-2); stroke-width: 10; }
+
+  .care-ring-fg {
+    fill: none;
+    stroke: var(--leaf);
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.6s ease, stroke 0.3s ease;
+  }
+
+  .care-ring-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--serif);
+    font-size: 22px;
+  }
+
+  .care-stats { display: flex; flex-direction: column; gap: 6px; }
+
+  .care-stats .care-title {
+    font-family: var(--serif);
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+
+  .care-stats .care-row {
+    font-size: 13px;
+    color: var(--text-dim);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .care-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .care-dot.on-track { background: var(--leaf); }
+  .care-dot.overdue-dot { background: var(--overdue); }
+  .care-dot.completions { background: var(--gold); }
+
+  @media (max-width: 500px) {
+    .care-score-card { flex-direction: column; text-align: center; }
+  }
+
+  /* ---------- PROFILE CHIP ---------- */
+  .profile-chip {
+    display: flex;
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 16px 8px 8px;
+    align-items: center;
+    gap: 10px;
+    z-index: 90;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  }
+
+  .profile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: #1A1408;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .profile-name { font-size: 14px; font-weight: 500; white-space: nowrap; }
+
+  .profile-logout {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-left: 1px solid var(--line);
+    padding-left: 10px;
+    margin-left: 2px;
+    white-space: nowrap;
+  }
+
+  .profile-logout:hover { color: var(--text); }
+
+  @media (max-width: 560px) {
+    .task-card { flex-direction: column; align-items: stretch; }
+    .task-card .btn { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <div class="logo"><a href="index.html">root<span>line</span></a></div>
+    <div style="display:flex; gap:14px; align-items:center;">
+      <a href="market.html" class="back-link">Market</a>
+      <a href="space.html" class="back-link">+ Map another space</a>
+    </div>
+  </nav>
+
+  <h1>Monitoring &amp; maintenance</h1>
+  <p class="subtitle">Your care schedule, kept up to date as you mark tasks done.</p>
+
+  <div class="care-score-card" id="care-score-card">
+    <div class="care-ring-wrap">
+      <svg width="110" height="110" viewBox="0 0 110 110">
+        <circle class="care-ring-bg" cx="55" cy="55" r="46"></circle>
+        <circle class="care-ring-fg" id="care-ring-fg" cx="55" cy="55" r="46"
+                stroke-dasharray="289" stroke-dashoffset="289"></circle>
+      </svg>
+      <div class="care-ring-label" id="care-score-value">–</div>
+    </div>
+    <div class="care-stats">
+      <div class="care-title">Care health</div>
+      <div class="care-row"><span class="care-dot on-track"></span><span id="care-on-track-text">– tasks on track</span></div>
+      <div class="care-row"><span class="care-dot overdue-dot"></span><span id="care-overdue-text">– tasks overdue</span></div>
+      <div class="care-row"><span class="care-dot completions"></span><span id="care-completions-text">– check-ups logged</span></div>
+    </div>
+  </div>
+
+  <p class="status-msg" id="schedule-status">Loading your schedule…</p>
+
+  <div id="task-sections"></div>
+
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <p>No tasks yet — start growing a crop from your recommendations to set up a care schedule.</p>
+    <a href="space.html" class="btn btn-primary">Map your space</a>
+  </div>
+</div>
+
+<div class="profile-chip" id="profile-chip">
+  <div class="profile-avatar" id="profile-avatar">R</div>
+  <div class="profile-name" id="profile-name">Grower</div>
+  <a href="#" class="profile-logout" id="profile-logout-btn">Log out</a>
+</div>
+
+<script>
+  const API_BASE = "http://127.0.0.1:8000";
+
+  const params = new URLSearchParams(window.location.search);
+  const spaceId = params.get("space_id") || localStorage.getItem("rootline_last_space_id");
+
+  const TASK_ICONS = {
+    watering: "💧",
+    fertilizing: "🌱",
+    pruning: "✂️",
+    pest_check: "🔍",
+  };
+
+  const TASK_LABELS = {
+    watering: "Water",
+    fertilizing: "Fertilize",
+    pruning: "Prune",
+    pest_check: "Check for pests",
+  };
+
+  // ---------- require a logged-in user ----------
+  function requireAuth() {
+    const savedUserId = localStorage.getItem("rootline_user_id");
+    if (!savedUserId) {
+      window.location.href = "index.html?login=1";
+      return false;
+    }
+    const name = localStorage.getItem("rootline_name") || "Grower";
+    document.getElementById("profile-name").textContent = name;
+    document.getElementById("profile-avatar").textContent = name.charAt(0).toUpperCase();
+    return true;
+  }
+
+  document.getElementById("profile-logout-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    localStorage.removeItem("rootline_user_id");
+    localStorage.removeItem("rootline_name");
+    localStorage.removeItem("rootline_token");
+    window.location.href = "index.html";
+  });
+
+  if (requireAuth()) {
+    if (!spaceId) {
+      document.getElementById("schedule-status").textContent =
+        "No space found yet — map a space first to get a care schedule.";
+      document.getElementById("empty-state").style.display = "block";
+    } else {
+      localStorage.setItem("rootline_last_space_id", spaceId);
+      loadSchedule();
+      loadCareScore();
+    }
+  }
+
+  const CIRCUMFERENCE = 2 * Math.PI * 46;
+
+  async function loadCareScore() {
+    const card = document.getElementById("care-score-card");
+    try {
+      const res = await fetch(`${API_BASE}/spaces/${spaceId}/schedule/summary`);
+      if (!res.ok) return;
+      const summary = await res.json();
+
+      if (summary.total_tasks === 0) {
+        card.classList.remove("active");
+        return;
+      }
+
+      card.classList.add("active");
+      document.getElementById("care-score-value").textContent = `${Math.round(summary.care_score)}%`;
+      document.getElementById("care-on-track-text").textContent =
+        `${summary.on_track} of ${summary.total_tasks} tasks on track`;
+      document.getElementById("care-overdue-text").textContent =
+        `${summary.overdue} task${summary.overdue === 1 ? "" : "s"} overdue`;
+      document.getElementById("care-completions-text").textContent =
+        `${summary.total_completions} check-up${summary.total_completions === 1 ? "" : "s"} logged`;
+
+      const ring = document.getElementById("care-ring-fg");
+      const offset = CIRCUMFERENCE * (1 - summary.care_score / 100);
+      ring.style.strokeDashoffset = offset;
+
+      // Color the ring based on how healthy the score is.
+      if (summary.care_score >= 80) {
+        ring.style.stroke = "var(--leaf)";
+      } else if (summary.care_score >= 50) {
+        ring.style.stroke = "var(--gold)";
+      } else {
+        ring.style.stroke = "var(--overdue)";
+      }
+    } catch (err) {
+      // If this fails, just leave the card hidden — the task list below still works.
+      console.warn("Could not load care score:", err.message);
+    }
+  }
+
+  function daysFromToday(dateStr) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const due = new Date(dateStr + "T00:00:00");
+    return Math.round((due - today) / (1000 * 60 * 60 * 24));
+  }
+
+  function dueLabel(days) {
+    if (days < 0) return { text: `Overdue by ${Math.abs(days)} day${Math.abs(days) === 1 ? "" : "s"}`, overdue: true };
+    if (days === 0) return { text: "Due today", overdue: true };
+    if (days === 1) return { text: "Due tomorrow", overdue: false };
+    return { text: `Due in ${days} days`, overdue: false };
+  }
+
+  async function loadSchedule() {
+    const statusEl = document.getElementById("schedule-status");
+    const sectionsEl = document.getElementById("task-sections");
+    const emptyEl = document.getElementById("empty-state");
+
+    try {
+      const res = await fetch(`${API_BASE}/spaces/${spaceId}/schedule`);
+      if (!res.ok) throw new Error("Could not load your schedule.");
+      const tasks = await res.json();
+
+      statusEl.style.display = "none";
+
+      if (tasks.length === 0) {
+        emptyEl.style.display = "block";
+        return;
+      }
+
+      renderTasks(tasks);
+    } catch (err) {
+      statusEl.textContent = err.message + " Make sure the backend is running at " + API_BASE + ".";
+    }
+  }
+
+  function renderTasks(tasks) {
+    const sectionsEl = document.getElementById("task-sections");
+    const emptyEl = document.getElementById("empty-state");
+
+    const withDueInfo = tasks.map(t => ({ ...t, daysUntilDue: daysFromToday(t.next_due) }));
+    withDueInfo.sort((a, b) => a.daysUntilDue - b.daysUntilDue);
+
+    if (withDueInfo.length === 0) {
+      emptyEl.style.display = "block";
+      sectionsEl.innerHTML = "";
+      return;
+    }
+    emptyEl.style.display = "none";
+
+    sectionsEl.innerHTML = `
+      <div class="task-section">
+        <div class="section-title">Upcoming care tasks</div>
+        <div id="task-list"></div>
+      </div>
+    `;
+
+    const listEl = document.getElementById("task-list");
+    listEl.innerHTML = withDueInfo.map(t => {
+      const due = dueLabel(t.daysUntilDue);
+      return `
+        <div class="task-card ${due.overdue ? 'overdue' : ''}" data-task-id="${t.id}">
+          <div class="task-main">
+            <div class="task-icon">${TASK_ICONS[t.task_type] || "🌿"}</div>
+            <div>
+              <div class="task-name">${TASK_LABELS[t.task_type] || t.task_type} — ${t.crop_name}</div>
+              <div class="task-meta ${due.overdue ? 'overdue-text' : ''}">${due.text} · repeats every ${t.frequency_days} days</div>
+            </div>
+          </div>
+          <button class="btn btn-primary complete-btn" data-task-id="${t.id}">Mark done</button>
+        </div>
+      `;
+    }).join("");
+
+    document.querySelectorAll(".complete-btn").forEach(btn => {
+      btn.addEventListener("click", () => completeTask(btn.dataset.taskId, btn));
+    });
+  }
+
+  async function completeTask(taskId, btn) {
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+    try {
+      const res = await fetch(`${API_BASE}/spaces/${spaceId}/schedule/${taskId}/complete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      if (!res.ok) throw new Error("Could not update this task.");
+      await loadSchedule();
+      await loadCareScore();
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = "Mark done";
+      alert(err.message + " Make sure the backend is running at " + API_BASE + ".");
+    }
+  }
+</script>
+
+</body>
+</html>

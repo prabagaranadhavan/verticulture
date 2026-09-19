@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rootline — Grow up, not out</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #142016;
+    --surface: #1D2E20;
+    --surface-2: #24352A;
+    --text: #EDE9DD;
+    --text-dim: #B9C2B4;
+    --gold: #D9A441;
+    --gold-dim: #C4923A;
+    --leaf: #7FA65C;
+    --soil: #8B6142;
+    --line: rgba(237, 233, 221, 0.12);
+    --serif: 'Fraunces', serif;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ---------- NAV ---------- */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 0;
+  }
+
+  .logo {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+
+  .logo span { color: var(--leaf); }
+
+  .nav-links {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+
+  .btn {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 11px 22px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: #1A1408;
+  }
+
+  .btn-primary:hover { background: var(--gold-dim); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--line);
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+    gap: 48px;
+    padding: 56px 0 88px;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: 56px;
+    font-weight: 500;
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    max-width: 15ch;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--leaf);
+    font-weight: 500;
+  }
+
+  .hero p {
+    margin-top: 22px;
+    font-size: 18px;
+    color: var(--text-dim);
+    max-width: 46ch;
+  }
+
+  .hero-actions {
+    margin-top: 32px;
+    display: flex;
+    gap: 14px;
+  }
+
+  .hero-note {
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  /* ---------- HERO ILLUSTRATION ---------- */
+  .tower-wrap {
+    display: flex;
+    justify-content: center;
+  }
+
+  .tower-wrap svg { width: 100%; max-width: 340px; height: auto; }
+
+  .vine {
+    stroke: var(--leaf);
+    stroke-width: 3;
+    fill: none;
+    stroke-linecap: round;
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+    animation: grow 2.4s ease-out forwards;
+  }
+
+  .vine.d2 { animation-delay: 0.3s; }
+  .vine.d3 { animation-delay: 0.6s; }
+  .vine.d4 { animation-delay: 0.9s; }
+
+  .leaf-shape {
+    fill: var(--leaf);
+    opacity: 0;
+    transform-origin: center;
+    animation: pop 0.5s ease-out forwards;
+  }
+
+  @keyframes grow {
+    to { stroke-dashoffset: 0; }
+  }
+
+  @keyframes pop {
+    from { opacity: 0; transform: scale(0.4); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vine { animation: none; stroke-dashoffset: 0; }
+    .leaf-shape { animation: none; opacity: 1; }
+  }
+
+  /* ---------- STEPS ---------- */
+  .steps-section {
+    padding: 72px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .section-head {
+    max-width: 52ch;
+    margin-bottom: 48px;
+  }
+
+  .section-head h2 {
+    font-family: var(--serif);
+    font-size: 34px;
+    font-weight: 500;
+  }
+
+  .section-head p {
+    margin-top: 12px;
+    color: var(--text-dim);
+    font-size: 16px;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+  }
+
+  .step {
+    border-top: 2px solid var(--soil);
+    padding-top: 16px;
+  }
+
+  .step .num {
+    font-family: var(--serif);
+    font-size: 28px;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .step h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .step p {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  /* ---------- GROW CARDS ---------- */
+  .grow-section {
+    padding: 72px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .grow-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .grow-card {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 26px;
+    border: 1px solid var(--line);
+  }
+
+  .grow-card .tag {
+    font-size: 13px;
+    color: var(--leaf);
+    font-weight: 500;
+  }
+
+  .grow-card h3 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    margin-top: 8px;
+  }
+
+  .grow-card p {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  /* ---------- MARKET STRIP ---------- */
+  .market-section {
+    padding: 72px 0;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .market-copy h2 {
+    font-family: var(--serif);
+    font-size: 30px;
+    font-weight: 500;
+  }
+
+  .market-copy p {
+    margin-top: 14px;
+    color: var(--text-dim);
+    font-size: 16px;
+    max-width: 42ch;
+  }
+
+  .price-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 24px;
+  }
+
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+  }
+
+  .price-row:last-child { border-bottom: none; }
+
+  .price-row .crop { font-weight: 500; }
+
+  .price-row .change { font-size: 13px; }
+
+  .up { color: var(--leaf); }
+  .down { color: #C97B63; }
+
+  /* ---------- CTA / FOOTER ---------- */
+  .cta-section {
+    padding: 80px 0;
+    border-top: 1px solid var(--line);
+    text-align: left;
+  }
+
+  .cta-section h2 {
+    font-family: var(--serif);
+    font-size: 38px;
+    font-weight: 500;
+    max-width: 16ch;
+  }
+
+  .cta-section p {
+    margin-top: 14px;
+    color: var(--text-dim);
+    font-size: 16px;
+  }
+
+  .cta-section .hero-actions { margin-top: 28px; }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 32px 0 48px;
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+
+  /* ---------- LOGIN MODAL ---------- */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 15, 10, 0.65);
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 36px;
+    width: 100%;
+    max-width: 380px;
+    position: relative;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .modal-card h2 {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-weight: 500;
+  }
+
+  .modal-card .modal-subtitle {
+    margin-top: 8px;
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+
+  .modal-field { margin-top: 22px; }
+
+  .modal-field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .modal-field input {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15px;
+    padding: 12px 14px;
+    border-radius: 7px;
+    outline: none;
+  }
+
+  .modal-field input:focus { border-color: var(--gold); }
+
+  .modal-error {
+    margin-top: 14px;
+    color: #C97B63;
+    font-size: 13px;
+    display: none;
+  }
+
+  .modal-submit {
+    width: 100%;
+    margin-top: 26px;
+  }
+
+  .modal-footer-note {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .modal-footer-note a {
+    color: var(--leaf);
+    text-decoration: none;
+  }
+
+  .modal-success {
+    margin-top: 14px;
+    color: var(--leaf);
+    font-size: 13px;
+    display: none;
+  }
+
+  /* ---------- PROFILE CHIP (corner, dashboard-style) ---------- */
+  .profile-chip {
+    display: none;
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 16px 8px 8px;
+    align-items: center;
+    gap: 10px;
+    z-index: 90;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  }
+
+  .profile-chip.active { display: flex; }
+
+  .profile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: #1A1408;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .profile-name {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .profile-logout {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-left: 1px solid var(--line);
+    padding-left: 10px;
+    margin-left: 2px;
+    white-space: nowrap;
+  }
+
+  .profile-logout:hover { color: var(--text); }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 40px; }
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    .grow-grid { grid-template-columns: 1fr; }
+    .market-section { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <div class="logo">root<span>line</span></div>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#grow">What you can grow</a>
+      <a href="#market">Market prices</a>
+    </div>
+    <div style="display:flex; gap:10px;" id="nav-auth-area">
+      <a href="#" class="btn btn-ghost" id="nav-login-btn">Log in</a>
+      <a href="#" class="btn btn-primary signup-trigger">Get started</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div>
+      <h1>Turn your empty space into a <em>working farm</em>.</h1>
+      <p>Tell us the size of your backyard, terrace, or spare room, and we'll tell you exactly what to grow, how to set it up, and how to keep it alive — vertically, in the space you already have.</p>
+      <div class="hero-actions">
+        <a href="#" class="btn btn-primary signup-trigger">Map your space</a>
+        <a href="#how" class="btn btn-ghost">See how it works</a>
+      </div>
+      <p class="hero-note">No farming background needed. We start from your soil, your space, and your goals.</p>
+    </div>
+
+    <div class="tower-wrap">
+      <svg viewBox="0 0 300 380" xmlns="http://www.w3.org/2000/svg">
+        <!-- tower frame -->
+        <rect x="70" y="40" width="160" height="300" rx="4" fill="none" stroke="#3A4A3D" stroke-width="2"/>
+        <line x1="70" y1="115" x2="230" y2="115" stroke="#3A4A3D" stroke-width="2"/>
+        <line x1="70" y1="190" x2="230" y2="190" stroke="#3A4A3D" stroke-width="2"/>
+        <line x1="70" y1="265" x2="230" y2="265" stroke="#3A4A3D" stroke-width="2"/>
+
+        <!-- vines growing up through each shelf -->
+        <path class="vine d4" d="M150,340 C150,320 130,300 150,280 C170,260 150,240 150,225" />
+        <path class="vine d3" d="M150,225 C150,205 170,190 150,175 C130,160 150,145 150,130" />
+        <path class="vine d2" d="M150,130 C150,112 130,100 150,85 C170,70 150,58 150,45" />
+        <path class="vine" d="M150,45 C150,35 145,28 138,22" />
+
+        <!-- leaves along the vine -->
+        <ellipse class="leaf-shape" style="animation-delay:1.0s" cx="128" cy="300" rx="14" ry="7" transform="rotate(-30 128 300)"/>
+        <ellipse class="leaf-shape" style="animation-delay:1.1s" cx="170" cy="270" rx="14" ry="7" transform="rotate(25 170 270)"/>
+        <ellipse class="leaf-shape" style="animation-delay:1.3s" cx="130" cy="195" rx="14" ry="7" transform="rotate(-25 130 195)"/>
+        <ellipse class="leaf-shape" style="animation-delay:1.4s" cx="172" cy="165" rx="14" ry="7" transform="rotate(30 172 165)"/>
+        <ellipse class="leaf-shape" style="animation-delay:1.6s" cx="128" cy="100" rx="13" ry="6.5" transform="rotate(-25 128 100)"/>
+        <ellipse class="leaf-shape" style="animation-delay:1.7s" cx="170" cy="72" rx="13" ry="6.5" transform="rotate(25 170 72)"/>
+        <ellipse class="leaf-shape" style="animation-delay:1.9s" cx="140" cy="30" rx="11" ry="6" transform="rotate(-15 140 30)"/>
+
+        <!-- base pot -->
+        <path d="M110,340 L190,340 L180,375 L120,375 Z" fill="#8B6142" opacity="0.9"/>
+      </svg>
+    </div>
+  </section>
+
+  <section class="steps-section" id="how">
+    <div class="section-head">
+      <h2>From bare ground to first harvest</h2>
+      <p>Five steps, in order — each one feeds directly into the next.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="num">1</span>
+        <h3>Measure your space</h3>
+        <p>Enter the dimensions of your backyard, terrace, balcony, or room — indoors or out.</p>
+      </div>
+      <div class="step">
+        <span class="num">2</span>
+        <h3>Identify your soil</h3>
+        <p>Pick your soil type, or upload a photo and we'll work it out for you.</p>
+      </div>
+      <div class="step">
+        <span class="num">3</span>
+        <h3>Get your crop plan</h3>
+        <p>Crops, fruit, vegetables, leafy greens, and herbs matched to your space and soil.</p>
+      </div>
+      <div class="step">
+        <span class="num">4</span>
+        <h3>Maintain and monitor</h3>
+        <p>A watering schedule, care calendar, and vertical equipment suited to your room.</p>
+      </div>
+      <div class="step">
+        <span class="num">5</span>
+        <h3>Use it or sell it</h3>
+        <p>See current market prices nearby and where to buy fertilizer and supplies.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="grow-section" id="grow">
+    <div class="section-head">
+      <h2>Grow for your kitchen, or grow to sell</h2>
+      <p>Recommendations are split by what you're actually trying to do with the harvest.</p>
+    </div>
+    <div class="grow-grid">
+      <div class="grow-card">
+        <span class="tag">For home use</span>
+        <h3>Leafy greens & herbs</h3>
+        <p>Spinach, mint, coriander, and lettuce grow well in small vertical racks and are ready in weeks.</p>
+      </div>
+      <div class="grow-card">
+        <span class="tag">For selling</span>
+        <h3>High-turnover vegetables</h3>
+        <p>Tomatoes, chillies, and okra suited to your area's demand and market price trends.</p>
+      </div>
+      <div class="grow-card">
+        <span class="tag">Longer term</span>
+        <h3>Fruit & perennials</h3>
+        <p>Guava, papaya, and lemon for larger backyard plots with more sustained space.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="market-section" id="market">
+    <div class="market-copy">
+      <h2>Know what it's worth before you plant it</h2>
+      <p>Local market prices for the crops you're growing, so you can decide what to keep and what to sell — and where nearby to buy fertilizer and seedlings.</p>
+      <a href="market.html" class="btn btn-ghost" style="margin-top: 18px;">See full market &amp; suppliers →</a>
+    </div>
+    <div class="price-card" id="price-card">
+      <div class="price-row">
+        <span class="crop">Tomato</span>
+        <span>₹28 / kg</span>
+      </div>
+      <div class="price-row">
+        <span class="crop">Spinach</span>
+        <span>₹18 / kg</span>
+      </div>
+      <div class="price-row">
+        <span class="crop">Mint</span>
+        <span>₹40 / kg</span>
+      </div>
+      <div class="price-row">
+        <span class="crop">Okra</span>
+        <span>₹32 / kg</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <h2>Your space is ready. Let's plan what grows in it.</h2>
+    <p>It takes about two minutes to map your space and soil.</p>
+    <div class="hero-actions">
+      <a href="#" class="btn btn-primary signup-trigger">Map your space</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>rootline</span>
+    <span>Built for first-time growers</span>
+  </footer>
+</div>
+
+<div class="modal-overlay" id="login-modal">
+  <div class="modal-card">
+    <button class="modal-close" id="login-modal-close" aria-label="Close">&times;</button>
+    <h2>Welcome back</h2>
+    <p class="modal-subtitle">Log in to see your spaces and crop plans.</p>
+
+    <form id="login-form">
+      <div class="modal-field">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" required autocomplete="email" />
+      </div>
+      <div class="modal-field">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" required autocomplete="current-password" />
+      </div>
+
+      <p class="modal-error" id="login-error"></p>
+      <p class="modal-success" id="login-success"></p>
+
+      <button type="submit" class="btn btn-primary modal-submit" id="login-submit">Log in</button>
+    </form>
+
+    <p class="modal-footer-note">New to Rootline? <a href="#" id="switch-to-signup">Get started free</a></p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="signup-modal">
+  <div class="modal-card">
+    <button class="modal-close" id="signup-modal-close" aria-label="Close">&times;</button>
+    <h2>Create your account</h2>
+    <p class="modal-subtitle">Sign up with your email to save your spaces and crop plans.</p>
+
+    <form id="signup-form">
+      <div class="modal-field">
+        <label for="signup-name">Name</label>
+        <input type="text" id="signup-name" required autocomplete="name" />
+      </div>
+      <div class="modal-field">
+        <label for="signup-email">Email</label>
+        <input type="email" id="signup-email" required autocomplete="email" placeholder="you@gmail.com" />
+      </div>
+      <div class="modal-field">
+        <label for="signup-password">Create a password</label>
+        <input type="password" id="signup-password" required autocomplete="new-password" minlength="6" />
+      </div>
+
+      <p class="modal-error" id="signup-error"></p>
+
+      <button type="submit" class="btn btn-primary modal-submit" id="signup-submit">Sign up</button>
+    </form>
+
+    <p class="modal-footer-note">Already have an account? <a href="#" id="switch-to-login">Log in</a></p>
+  </div>
+</div>
+
+<div class="profile-chip" id="profile-chip">
+  <div class="profile-avatar" id="profile-avatar">R</div>
+  <div class="profile-name" id="profile-name">Guest</div>
+  <a href="#" class="profile-logout" id="profile-logout-btn">Log out</a>
+</div>
+
+<script>
+
+  const API_BASE = "http://127.0.0.1:8000";
+
+  // ---------- auth state (persisted in localStorage across visits) ----------
+  function getAuthState() {
+    const userId = localStorage.getItem("rootline_user_id");
+    if (!userId) return null;
+    return { userId, name: localStorage.getItem("rootline_name") || "Grower" };
+  }
+
+  function setAuthState(userId, name, token) {
+    localStorage.setItem("rootline_user_id", userId);
+    localStorage.setItem("rootline_name", name || "Grower");
+    localStorage.setItem("rootline_token", token);
+  }
+
+  function clearAuthState() {
+    localStorage.removeItem("rootline_user_id");
+    localStorage.removeItem("rootline_name");
+    localStorage.removeItem("rootline_token");
+  }
+
+  const loggedOutNavHTML = `
+    <a href="#" class="btn btn-ghost" id="nav-login-btn">Log in</a>
+    <a href="#" class="btn btn-primary signup-trigger">Get started</a>
+  `;
+
+  function renderAuthUI() {
+    const auth = getAuthState();
+    const navArea = document.getElementById("nav-auth-area");
+    const chip = document.getElementById("profile-chip");
+
+    if (auth) {
+      navArea.innerHTML = `
+        <a href="market.html" class="btn btn-ghost">Market</a>
+        <a href="schedule.html" class="btn btn-ghost">My schedule</a>
+        <a href="space.html" class="btn btn-primary">Map your space</a>
+      `;
+      chip.classList.add("active");
+      document.getElementById("profile-name").textContent = auth.name;
+      document.getElementById("profile-avatar").textContent = auth.name.charAt(0).toUpperCase();
+    } else {
+      navArea.innerHTML = loggedOutNavHTML;
+      chip.classList.remove("active");
+    }
+  }
+
+  // Pull live market prices into the price card on the homepage.
+  // If the backend is unreachable or has no price rows yet, the
+  // static placeholder rows already in the HTML stay as-is.
+  async function loadHomeMarketPrices() {
+    const card = document.getElementById("price-card");
+    try {
+      const res = await fetch(`${API_BASE}/market/prices`);
+      if (!res.ok) return;
+      const prices = await res.json();
+      if (!Array.isArray(prices) || prices.length === 0) return;
+
+      const latestByCrop = new Map();
+      prices.forEach(p => {
+        if (!latestByCrop.has(p.crop_name)) latestByCrop.set(p.crop_name, p);
+      });
+
+      const rows = Array.from(latestByCrop.values()).slice(0, 4).map(p => `
+        <div class="price-row">
+          <span class="crop">${p.crop_name}</span>
+          <span>₹${p.price_per_kg} / kg</span>
+        </div>
+      `).join("");
+
+      card.innerHTML = rows;
+    } catch (err) {
+      // Backend not running or unreachable — keep the static fallback rows.
+      console.warn("Could not load live market prices:", err.message);
+    }
+  }
+
+  // ---------- login modal ----------
+  const loginModal = document.getElementById("login-modal");
+  const loginForm = document.getElementById("login-form");
+  const loginError = document.getElementById("login-error");
+  const loginSuccess = document.getElementById("login-success");
+  const loginSubmitBtn = document.getElementById("login-submit");
+
+  function openLoginModal(options = {}) {
+    loginError.style.display = "none";
+    loginForm.reset();
+
+    if (options.successMsg) {
+      loginSuccess.textContent = options.successMsg;
+      loginSuccess.style.display = "block";
+    } else {
+      loginSuccess.style.display = "none";
+    }
+
+    loginModal.classList.add("active");
+
+    if (options.prefillEmail) {
+      document.getElementById("login-email").value = options.prefillEmail;
+    }
+  }
+
+  function closeLoginModal() {
+    loginModal.classList.remove("active");
+  }
+
+  document.getElementById("login-modal-close").addEventListener("click", closeLoginModal);
+
+  loginModal.addEventListener("click", (e) => {
+    if (e.target === loginModal) closeLoginModal();
+  });
+
+  // Whether the user got sent here because space.html required login —
+  // if so, send them on to space.html right after they successfully log in.
+  const cameFromSpaceRedirect = new URLSearchParams(window.location.search).get("login") === "1";
+
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    loginError.style.display = "none";
+    loginSuccess.style.display = "none";
+
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value;
+
+    loginSubmitBtn.disabled = true;
+    loginSubmitBtn.textContent = "Logging in...";
+
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        if (res.status === 401) throw new Error("Incorrect email or password.");
+        throw new Error("Something went wrong. Please try again.");
+      }
+
+      const data = await res.json();
+      setAuthState(data.user_id, data.name, data.access_token);
+      closeLoginModal();
+      renderAuthUI();
+
+      // Only jump straight to the space form if that's why they were sent
+      // here in the first place. A normal login from the homepage just
+      // updates the page — it doesn't navigate anywhere.
+      if (cameFromSpaceRedirect) {
+        window.location.href = "space.html";
+      }
+    } catch (err) {
+      loginError.textContent = err.message + (err.message.includes("try again") ? ` Make sure the backend is running at ${API_BASE}.` : "");
+      loginError.style.display = "block";
+    } finally {
+      loginSubmitBtn.disabled = false;
+      loginSubmitBtn.textContent = "Log in";
+    }
+  });
+
+  // ---------- signup modal ----------
+  const signupModal = document.getElementById("signup-modal");
+  const signupForm = document.getElementById("signup-form");
+  const signupError = document.getElementById("signup-error");
+  const signupSubmitBtn = document.getElementById("signup-submit");
+
+  function openSignupModal() {
+    signupError.style.display = "none";
+    signupForm.reset();
+    signupModal.classList.add("active");
+  }
+
+  function closeSignupModal() {
+    signupModal.classList.remove("active");
+  }
+
+  document.getElementById("signup-modal-close").addEventListener("click", closeSignupModal);
+
+  signupModal.addEventListener("click", (e) => {
+    if (e.target === signupModal) closeSignupModal();
+  });
+
+  // Links that swap between the two modals
+  document.getElementById("switch-to-signup").addEventListener("click", (e) => {
+    e.preventDefault();
+    closeLoginModal();
+    openSignupModal();
+  });
+
+  document.getElementById("switch-to-login").addEventListener("click", (e) => {
+    e.preventDefault();
+    closeSignupModal();
+    openLoginModal();
+  });
+
+  signupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    signupError.style.display = "none";
+
+    const name = document.getElementById("signup-name").value.trim();
+    const email = document.getElementById("signup-email").value.trim();
+    const password = document.getElementById("signup-password").value;
+
+    signupSubmitBtn.disabled = true;
+    signupSubmitBtn.textContent = "Creating account...";
+
+    try {
+      const res = await fetch(`${API_BASE}/auth/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      if (!res.ok) {
+        if (res.status === 400) throw new Error("An account with that email already exists — try logging in instead.");
+        throw new Error("Something went wrong creating your account. Please try again.");
+      }
+
+      // Sign up does NOT log the user in automatically. They land on the
+      // login modal next, and only after that succeeds do they see the
+      // logged-in homepage.
+      closeSignupModal();
+      openLoginModal({
+        prefillEmail: email,
+        successMsg: "Account created! Log in to continue.",
+      });
+    } catch (err) {
+      signupError.textContent = err.message + (err.message.includes("try again") ? ` Make sure the backend is running at ${API_BASE}.` : "");
+      signupError.style.display = "block";
+    } finally {
+      signupSubmitBtn.disabled = false;
+      signupSubmitBtn.textContent = "Sign up";
+    }
+  });
+
+  // ---------- delegated clicks (covers buttons re-rendered by renderAuthUI) ----------
+  document.addEventListener("click", (e) => {
+    if (e.target.closest("#nav-login-btn")) {
+      e.preventDefault();
+      openLoginModal();
+      return;
+    }
+
+    const signupTrigger = e.target.closest(".signup-trigger");
+    if (signupTrigger) {
+      e.preventDefault();
+      if (getAuthState()) {
+        window.location.href = "space.html";
+      } else {
+        openSignupModal();
+      }
+      return;
+    }
+
+    if (e.target.closest("#profile-logout-btn")) {
+      e.preventDefault();
+      clearAuthState();
+      renderAuthUI();
+    }
+  });
+
+  // ---------- initial page setup ----------
+  loadHomeMarketPrices();
+  renderAuthUI();
+
+  // If space.html redirected here because the user wasn't logged in,
+  // and they genuinely aren't, open the login modal right away.
+  if (cameFromSpaceRedirect && !getAuthState()) {
+    openLoginModal();
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rootline — Map your space</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #142016;
+    --surface: #1D2E20;
+    --surface-2: #24352A;
+    --text: #EDE9DD;
+    --text-dim: #B9C2B4;
+    --gold: #D9A441;
+    --gold-dim: #C4923A;
+    --leaf: #7FA65C;
+    --soil: #8B6142;
+    --line: rgba(237, 233, 221, 0.12);
+    --error: #C97B63;
+    --serif: 'Fraunces', serif;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 32px 80px; }
+
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 0;
+  }
+
+  .logo { font-family: var(--serif); font-size: 22px; font-weight: 600; }
+  .logo span { color: var(--leaf); }
+  .logo a { text-decoration: none; }
+
+  .progress { display: flex; gap: 8px; }
+  .progress .dot {
+    width: 28px; height: 4px; border-radius: 2px;
+    background: var(--line);
+  }
+  .progress .dot.active { background: var(--gold); }
+  .progress .dot.done { background: var(--leaf); }
+
+  .stage { display: none; padding-top: 12px; }
+  .stage.active { display: block; }
+
+  h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 34px;
+    line-height: 1.15;
+    max-width: 18ch;
+  }
+
+  .subtitle { margin-top: 10px; color: var(--text-dim); font-size: 16px; max-width: 48ch; }
+
+  .field-group { margin-top: 36px; }
+
+  label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--text-dim);
+  }
+
+  input[type="number"], select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 16px;
+    padding: 13px 14px;
+    border-radius: 7px;
+    outline: none;
+  }
+
+  input[type="number"]:focus, select:focus {
+    border-color: var(--gold);
+  }
+
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  .choice-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 10px;
+  }
+
+  .choice {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    font-size: 15px;
+    text-align: left;
+  }
+
+  .choice:hover { border-color: var(--text-dim); }
+  .choice.selected { border-color: var(--gold); background: var(--surface-2); }
+
+  .toggle-row { display: flex; gap: 12px; margin-top: 10px; }
+  .toggle {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 15px;
+  }
+  .toggle.selected { border-color: var(--gold); background: var(--surface-2); }
+
+  .soil-tabs { display: flex; gap: 10px; margin-top: 8px; }
+  .soil-tab {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--text-dim);
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .soil-tab.active { background: var(--gold); color: #1A1408; border-color: var(--gold); }
+
+  .soil-panel { display: none; margin-top: 20px; }
+  .soil-panel.active { display: block; }
+
+  .upload-box {
+    border: 1.5px dashed var(--line);
+    border-radius: 10px;
+    padding: 32px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .upload-box:hover { border-color: var(--leaf); }
+  .upload-box input { display: none; }
+  .upload-preview { margin-top: 14px; font-size: 14px; color: var(--leaf); }
+
+  .btn {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 13px 26px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary { background: var(--gold); color: #1A1408; }
+  .btn-primary:hover { background: var(--gold-dim); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--line); }
+
+  .actions { margin-top: 40px; display: flex; justify-content: space-between; }
+
+  .error-msg {
+    margin-top: 16px;
+    color: var(--error);
+    font-size: 14px;
+    display: none;
+  }
+
+  .status-msg {
+    margin-top: 16px;
+    color: var(--text-dim);
+    font-size: 14px;
+    display: none;
+  }
+
+  /* ---------- results stage ---------- */
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-top: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.15s ease;
+  }
+
+  .result-card:hover { border-color: var(--gold); }
+
+  .result-card .name {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 500;
+  }
+
+  .result-card .meta { font-size: 13px; color: var(--text-dim); margin-top: 4px; }
+
+  .result-card .tag {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--surface-2);
+    color: var(--leaf);
+    white-space: nowrap;
+  }
+
+  .result-card .tag.sell { color: var(--gold); }
+
+  @media (max-width: 600px) {
+    .row, .choice-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ---------- PROFILE CHIP (matches index.html) ---------- */
+  .profile-chip {
+    display: flex;
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 16px 8px 8px;
+    align-items: center;
+    gap: 10px;
+    z-index: 90;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  }
+
+  .profile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: #1A1408;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .profile-name {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .profile-logout {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-left: 1px solid var(--line);
+    padding-left: 10px;
+    margin-left: 2px;
+    white-space: nowrap;
+  }
+
+  .profile-logout:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <div class="logo"><a href="index.html">root<span>line</span></a></div>
+    <div class="progress">
+      <div class="dot active" id="dot-1"></div>
+      <div class="dot" id="dot-2"></div>
+      <div class="dot" id="dot-3"></div>
+    </div>
+  </nav>
+
+  <!-- STAGE 1: SPACE -->
+  <section class="stage active" id="stage-1">
+    <h1>Tell us about your space</h1>
+    <p class="subtitle">This decides how much you can grow, and which crops will actually fit.</p>
+
+    <div class="field-group">
+      <label for="area">Area available (square feet)</label>
+      <input type="number" id="area" min="1" placeholder="e.g. 120" />
+    </div>
+
+    <div class="field-group">
+      <label>What kind of space is it?</label>
+      <div class="choice-grid" id="space-type-grid">
+        <button class="choice" data-value="backyard">Backyard</button>
+        <button class="choice" data-value="terrace">Terrace</button>
+        <button class="choice" data-value="balcony">Balcony</button>
+        <button class="choice" data-value="room">Spare room</button>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label>Is it indoors or outdoors?</label>
+      <div class="toggle-row" id="indoor-toggle">
+        <button class="toggle" data-value="false">Outdoors</button>
+        <button class="toggle" data-value="true">Indoors</button>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label for="sunlight">Direct sunlight per day (hours)</label>
+      <input type="number" id="sunlight" min="0" max="14" placeholder="e.g. 5" />
+    </div>
+
+    <p class="error-msg" id="stage1-error"></p>
+
+    <div class="actions">
+      <span></span>
+      <button class="btn btn-primary" id="stage1-next">Continue to soil</button>
+    </div>
+  </section>
+
+  <!-- STAGE 2: SOIL -->
+  <section class="stage" id="stage-2">
+    <h1>What's your soil like?</h1>
+    <p class="subtitle">If you're not sure, upload a photo and we'll take a first pass at identifying it.</p>
+
+    <div class="soil-tabs">
+      <button class="soil-tab active" data-panel="manual">I know my soil type</button>
+      <button class="soil-tab" data-panel="photo">Identify from a photo</button>
+    </div>
+
+    <div class="soil-panel active" id="panel-manual">
+      <div class="field-group" style="margin-top: 20px;">
+        <label>Soil type</label>
+        <div class="choice-grid" id="soil-type-grid">
+          <button class="choice" data-value="sandy">Sandy</button>
+          <button class="choice" data-value="clay">Clay</button>
+          <button class="choice" data-value="loamy">Loamy</button>
+          <button class="choice" data-value="silty">Silty</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="soil-panel" id="panel-photo">
+      <div class="field-group" style="margin-top: 20px;">
+        <label>Upload a clear photo of your soil</label>
+        <label class="upload-box" for="soil-photo-input">
+          Click to choose a photo, or drag one here
+          <input type="file" id="soil-photo-input" accept="image/*" />
+        </label>
+        <p class="upload-preview" id="upload-preview"></p>
+      </div>
+    </div>
+
+    <p class="error-msg" id="stage2-error"></p>
+    <p class="status-msg" id="stage2-status"></p>
+
+    <div class="actions">
+      <button class="btn btn-ghost" id="stage2-back">Back</button>
+      <button class="btn btn-primary" id="stage2-next">Get my crop plan</button>
+    </div>
+  </section>
+
+  <!-- STAGE 3: RESULTS -->
+  <section class="stage" id="stage-3">
+    <h1>Here's what fits your space</h1>
+    <p class="subtitle" id="results-subtitle">Ranked by how well each crop suits your area, soil, and sunlight. Tap a crop to see its growing guide.</p>
+
+    <p class="status-msg" id="stage3-status">Loading your recommendations…</p>
+    <div id="results-list"></div>
+
+    <div class="actions">
+      <button class="btn btn-ghost" id="stage3-back">Back</button>
+      <span></span>
+    </div>
+  </section>
+</div>
+
+<div class="profile-chip" id="profile-chip">
+  <div class="profile-avatar" id="profile-avatar">R</div>
+  <div class="profile-name" id="profile-name">Grower</div>
+  <a href="#" class="profile-logout" id="profile-logout-btn">Log out</a>
+</div>
+
+<script>
+  const API_BASE = "http://127.0.0.1:8000";
+  let state = {
+    userId: null,
+    spaceId: null,
+    area_sqft: null,
+    space_type: null,
+    indoor: null,
+    sunlight_hours: null,
+    soilMode: "manual",
+    soil_type: null,
+    soilPhotoFile: null,
+  };
+
+  // ---------- require a logged-in user ----------
+  function requireAuth() {
+    const savedUserId = localStorage.getItem("rootline_user_id");
+    if (!savedUserId) {
+      window.location.href = "index.html?login=1";
+      return false;
+    }
+    state.userId = savedUserId;
+
+    const name = localStorage.getItem("rootline_name") || "Grower";
+    document.getElementById("profile-name").textContent = name;
+    document.getElementById("profile-avatar").textContent = name.charAt(0).toUpperCase();
+
+    return true;
+  }
+
+  document.getElementById("profile-logout-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    localStorage.removeItem("rootline_user_id");
+    localStorage.removeItem("rootline_name");
+    localStorage.removeItem("rootline_token");
+    window.location.href = "index.html";
+  });
+
+  // Run this immediately — before the user can interact with the form at all.
+  requireAuth();
+
+  // ---------- stage navigation ----------
+  function goToStage(n) {
+    document.querySelectorAll(".stage").forEach(s => s.classList.remove("active"));
+    document.getElementById(`stage-${n}`).classList.add("active");
+    [1, 2, 3].forEach(i => {
+      const dot = document.getElementById(`dot-${i}`);
+      dot.classList.remove("active", "done");
+      if (i < n) dot.classList.add("done");
+      if (i === n) dot.classList.add("active");
+    });
+  }
+
+  // ---------- stage 1: space ----------
+  document.querySelectorAll("#space-type-grid .choice").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#space-type-grid .choice").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      state.space_type = btn.dataset.value;
+    });
+  });
+
+  document.querySelectorAll("#indoor-toggle .toggle").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#indoor-toggle .toggle").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      state.indoor = btn.dataset.value === "true";
+    });
+  });
+
+  document.getElementById("stage1-next").addEventListener("click", async () => {
+    const errorEl = document.getElementById("stage1-error");
+    errorEl.style.display = "none";
+
+    const area = parseFloat(document.getElementById("area").value);
+    const sunlight = parseFloat(document.getElementById("sunlight").value);
+
+    if (!area || area <= 0) return showError(errorEl, "Enter a valid area.");
+    if (!state.space_type) return showError(errorEl, "Choose the type of space.");
+    if (state.indoor === null) return showError(errorEl, "Tell us if it's indoors or outdoors.");
+    if (isNaN(sunlight) || sunlight < 0) return showError(errorEl, "Enter hours of direct sunlight (0 is fine).");
+
+    state.area_sqft = area;
+    state.sunlight_hours = sunlight;
+
+    const btn = document.getElementById("stage1-next");
+    btn.disabled = true;
+    btn.textContent = "Saving...";
+
+    try {
+      const res = await fetch(`${API_BASE}/spaces?user_id=${state.userId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          area_sqft: state.area_sqft,
+          space_type: state.space_type,
+          indoor: state.indoor,
+          sunlight_hours: state.sunlight_hours,
+        }),
+      });
+      if (!res.ok) throw new Error("Could not save your space details.");
+      const space = await res.json();
+      state.spaceId = space.id;
+      localStorage.setItem("rootline_last_space_id", space.id);
+      localStorage.setItem("rootline_last_area_sqft", state.area_sqft);
+      goToStage(2);
+    } catch (err) {
+      showError(errorEl, err.message + " Make sure the backend is running at " + API_BASE + ".");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Continue to soil";
+    }
+  });
+
+  // ---------- stage 2: soil ----------
+  document.querySelectorAll(".soil-tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".soil-tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      document.querySelectorAll(".soil-panel").forEach(p => p.classList.remove("active"));
+      document.getElementById(`panel-${tab.dataset.panel}`).classList.add("active");
+      state.soilMode = tab.dataset.panel;
+    });
+  });
+
+  document.querySelectorAll("#soil-type-grid .choice").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#soil-type-grid .choice").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      state.soil_type = btn.dataset.value;
+    });
+  });
+
+  document.getElementById("soil-photo-input").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      state.soilPhotoFile = file;
+      document.getElementById("upload-preview").textContent = `Selected: ${file.name}`;
+    }
+  });
+
+  document.getElementById("stage2-back").addEventListener("click", () => goToStage(1));
+
+  document.getElementById("stage2-next").addEventListener("click", async () => {
+    const errorEl = document.getElementById("stage2-error");
+    const statusEl = document.getElementById("stage2-status");
+    errorEl.style.display = "none";
+    statusEl.style.display = "none";
+
+    const btn = document.getElementById("stage2-next");
+    btn.disabled = true;
+
+    try {
+      if (state.soilMode === "manual") {
+        if (!state.soil_type) throw new Error("Choose a soil type, or switch to photo identification.");
+        btn.textContent = "Saving...";
+        const res = await fetch(`${API_BASE}/spaces/${state.spaceId}/soil`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ soil_type: state.soil_type }),
+        });
+        if (!res.ok) throw new Error("Could not save your soil type.");
+      } else {
+        if (!state.soilPhotoFile) throw new Error("Choose a photo of your soil first.");
+        btn.textContent = "Analyzing photo...";
+        statusEl.textContent = "This is an early version — photo identification is still a placeholder on the backend.";
+        statusEl.style.display = "block";
+        const formData = new FormData();
+        formData.append("file", state.soilPhotoFile);
+        const res = await fetch(`${API_BASE}/spaces/${state.spaceId}/soil/photo`, {
+          method: "POST",
+          body: formData,
+        });
+        if (!res.ok) throw new Error("Could not process your soil photo.");
+      }
+
+      goToStage(3);
+      loadRecommendations();
+    } catch (err) {
+      showError(errorEl, err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Get my crop plan";
+    }
+  });
+
+  // ---------- stage 3: results ----------
+  document.getElementById("stage3-back").addEventListener("click", () => goToStage(2));
+
+  async function loadRecommendations() {
+    const statusEl = document.getElementById("stage3-status");
+    const listEl = document.getElementById("results-list");
+    statusEl.style.display = "block";
+    statusEl.textContent = "Loading your recommendations…";
+    listEl.innerHTML = "";
+
+    try {
+      const res = await fetch(`${API_BASE}/spaces/${state.spaceId}/recommendations`);
+      if (!res.ok) throw new Error("Could not load recommendations.");
+      const crops = await res.json();
+
+      if (crops.length === 0) {
+        statusEl.textContent = "No matches yet — try adjusting your space details.";
+        return;
+      }
+
+      statusEl.style.display = "none";
+      crops.forEach(c => {
+        const card = document.createElement("a");
+        card.className = "result-card";
+        card.href = `guide.html?space_id=${state.spaceId}&crop_id=${c.crop_id}&area=${state.area_sqft}`;
+        card.innerHTML = `
+          <div>
+            <div class="name">${c.crop_name}</div>
+            <div class="meta">${c.category} · ready in about ${c.days_to_harvest} days · match score ${c.score}</div>
+          </div>
+          <div class="tag ${c.purpose === 'sell' ? 'sell' : ''}">${c.purpose === 'sell' ? 'Good to sell' : 'Good for home use'}</div>
+        `;
+        listEl.appendChild(card);
+      });
+    } catch (err) {
+      statusEl.textContent = err.message + " Make sure the backend is running at " + API_BASE + ".";
+    }
+  }
+
+  function showError(el, message) {
+    el.textContent = message;
+    el.style.display = "block";
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rootline — Growing guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #142016;
+    --surface: #1D2E20;
+    --surface-2: #24352A;
+    --text: #EDE9DD;
+    --text-dim: #B9C2B4;
+    --gold: #D9A441;
+    --gold-dim: #C4923A;
+    --leaf: #7FA65C;
+    --soil: #8B6142;
+    --line: rgba(237, 233, 221, 0.12);
+    --error: #C97B63;
+    --serif: 'Fraunces', serif;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 32px 100px; }
+
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 0;
+  }
+
+  .logo { font-family: var(--serif); font-size: 22px; font-weight: 600; }
+  .logo span { color: var(--leaf); }
+  .logo a { text-decoration: none; }
+
+  .back-link {
+    font-size: 14px;
+    color: var(--text-dim);
+    text-decoration: none;
+  }
+
+  h1 {
+    font-family: var(--serif);
+    font-size: 36px;
+    font-weight: 500;
+    margin-top: 12px;
+  }
+
+  .subtitle {
+    margin-top: 8px;
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+
+  .status-msg {
+    margin-top: 24px;
+    color: var(--text-dim);
+    font-size: 14px;
+  }
+
+  .guide-content { display: none; }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px;
+    margin-top: 28px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+
+  .stat-card .stat-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .stat-card .stat-value {
+    font-family: var(--serif);
+    font-size: 24px;
+    margin-top: 6px;
+  }
+
+  .stat-card .stat-note {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  .section-title {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 500;
+    margin-top: 40px;
+    margin-bottom: 4px;
+  }
+
+  .steps-list {
+    margin-top: 16px;
+    counter-reset: step-counter;
+    list-style: none;
+  }
+
+  .steps-list li {
+    counter-increment: step-counter;
+    position: relative;
+    padding: 14px 0 14px 40px;
+    border-bottom: 1px solid var(--line);
+    font-size: 15px;
+  }
+
+  .steps-list li:last-child { border-bottom: none; }
+
+  .steps-list li::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 0;
+    top: 12px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: var(--serif);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 13px 24px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary { background: var(--gold); color: #1A1408; }
+  .btn-primary:hover { background: var(--gold-dim); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--line);
+  }
+
+  .actions {
+    margin-top: 40px;
+    display: flex;
+    gap: 14px;
+    align-items: center;
+  }
+
+  .plant-error {
+    margin-top: 14px;
+    color: var(--error);
+    font-size: 14px;
+    display: none;
+  }
+
+  .plant-success {
+    margin-top: 14px;
+    color: var(--leaf);
+    font-size: 14px;
+    display: none;
+  }
+
+  /* ---------- PROFILE CHIP ---------- */
+  .profile-chip {
+    display: flex;
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 16px 8px 8px;
+    align-items: center;
+    gap: 10px;
+    z-index: 90;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  }
+
+  .profile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: #1A1408;
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .profile-name { font-size: 14px; font-weight: 500; white-space: nowrap; }
+
+  .profile-logout {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-left: 1px solid var(--line);
+    padding-left: 10px;
+    margin-left: 2px;
+    white-space: nowrap;
+  }
+
+  .profile-logout:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <div class="logo"><a href="index.html">root<span>line</span></a></div>
+    <a href="javascript:history.back()" class="back-link">&larr; Back to results</a>
+  </nav>
+
+  <h1 id="crop-title">Loading…</h1>
+  <p class="subtitle" id="crop-subtitle"></p>
+
+  <p class="status-msg" id="guide-status">Loading growing guide…</p>
+
+  <div class="guide-content" id="guide-content">
+    <div class="stat-grid" id="stat-grid"></div>
+
+    <div class="section-title">Step-by-step growing procedure</div>
+    <ol class="steps-list" id="steps-list"></ol>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="start-growing-btn">Start growing this crop</button>
+      <a href="javascript:history.back()" class="btn btn-ghost">Back to results</a>
+    </div>
+    <p class="plant-error" id="plant-error"></p>
+    <p class="plant-success" id="plant-success"></p>
+  </div>
+</div>
+
+<div class="profile-chip" id="profile-chip">
+  <div class="profile-avatar" id="profile-avatar">R</div>
+  <div class="profile-name" id="profile-name">Grower</div>
+  <a href="#" class="profile-logout" id="profile-logout-btn">Log out</a>
+</div>
+
+<script>
+  const API_BASE = "http://127.0.0.1:8000";
+
+  const params = new URLSearchParams(window.location.search);
+  const spaceId = params.get("space_id");
+  const cropId = params.get("crop_id");
+  const areaSqft = params.get("area") || 0;
+
+  // ---------- require a logged-in user ----------
+  function requireAuth() {
+    const savedUserId = localStorage.getItem("rootline_user_id");
+    if (!savedUserId) {
+      window.location.href = "index.html?login=1";
+      return false;
+    }
+    const name = localStorage.getItem("rootline_name") || "Grower";
+    document.getElementById("profile-name").textContent = name;
+    document.getElementById("profile-avatar").textContent = name.charAt(0).toUpperCase();
+    return true;
+  }
+
+  document.getElementById("profile-logout-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    localStorage.removeItem("rootline_user_id");
+    localStorage.removeItem("rootline_name");
+    localStorage.removeItem("rootline_token");
+    window.location.href = "index.html";
+  });
+
+  if (requireAuth()) {
+    if (!spaceId || !cropId) {
+      document.getElementById("guide-status").textContent =
+        "Missing space or crop info — please go back and pick a crop from your recommendations.";
+    } else {
+      loadGuide();
+    }
+  }
+
+  function frequencyLabel(days) {
+    if (days === 1) return "Every day";
+    return `Every ${days} days`;
+  }
+
+  async function loadGuide() {
+    const statusEl = document.getElementById("guide-status");
+    try {
+      const res = await fetch(`${API_BASE}/crops/${cropId}/guide?area_sqft=${areaSqft}`);
+      if (!res.ok) throw new Error("Could not load the growing guide.");
+      const guide = await res.json();
+
+      document.getElementById("crop-title").textContent = `Growing ${guide.crop_name}`;
+      const spotWord = guide.category === "fruit" ? "planting spot" : "tray";
+      const spotWordPlural = guide.category === "fruit" ? "planting spots" : "trays";
+      document.getElementById("crop-subtitle").textContent =
+        `Ready to harvest in about ${guide.days_to_harvest} days.`;
+
+      const statGrid = document.getElementById("stat-grid");
+      const stats = [
+        {
+          label: `${spotWord.charAt(0).toUpperCase() + spotWord.slice(1)}s that fit`,
+          value: `${guide.estimated_trays} ${guide.estimated_trays === 1 ? spotWord : spotWordPlural}`,
+          note: `Based on your ${areaSqft} sq ft space and ${guide.tray_area_sqft} sq ft per ${spotWord}.`,
+        },
+        {
+          label: "Watering",
+          value: frequencyLabel(guide.watering_frequency_days),
+          note: "Keep soil consistently moist, not waterlogged.",
+        },
+        {
+          label: "Fertilizing",
+          value: frequencyLabel(guide.fertilizing_frequency_days),
+          note: "Use a balanced fertilizer unless noted otherwise below.",
+        },
+      ];
+      if (guide.pruning_frequency_days) {
+        stats.push({
+          label: "Pruning",
+          value: frequencyLabel(guide.pruning_frequency_days),
+          note: "Keeps growth healthy and productive.",
+        });
+      }
+      if (guide.pest_check_frequency_days) {
+        stats.push({
+          label: "Pest check",
+          value: frequencyLabel(guide.pest_check_frequency_days),
+          note: "Look under leaves and along stems.",
+        });
+      }
+
+      statGrid.innerHTML = stats.map(s => `
+        <div class="stat-card">
+          <div class="stat-label">${s.label}</div>
+          <div class="stat-value">${s.value}</div>
+          <div class="stat-note">${s.note}</div>
+        </div>
+      `).join("");
+
+      const stepsList = document.getElementById("steps-list");
+      stepsList.innerHTML = guide.steps.map(step => `<li>${step}</li>`).join("");
+
+      statusEl.style.display = "none";
+      document.getElementById("guide-content").style.display = "block";
+    } catch (err) {
+      statusEl.textContent = err.message + " Make sure the backend is running at " + API_BASE + ".";
+    }
+  }
+
+  document.getElementById("start-growing-btn").addEventListener("click", async () => {
+    const btn = document.getElementById("start-growing-btn");
+    const errorEl = document.getElementById("plant-error");
+    const successEl = document.getElementById("plant-success");
+    errorEl.style.display = "none";
+    successEl.style.display = "none";
+
+    btn.disabled = true;
+    btn.textContent = "Setting up your schedule...";
+
+    try {
+      const res = await fetch(`${API_BASE}/spaces/${spaceId}/plant`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ crop_id: Number(cropId) }),
+      });
+      if (!res.ok) throw new Error("Could not start growing this crop.");
+
+      successEl.textContent = "Your care schedule is ready! Taking you there now...";
+      successEl.style.display = "block";
+      setTimeout(() => {
+        window.location.href = `schedule.html?space_id=${spaceId}`;
+      }, 900);
+    } catch (err) {
+      errorEl.textContent = err.message + " Make sure the backend is running at " + API_BASE + ".";
+      errorEl.style.display = "block";
+      btn.disabled = false;
+      btn.textContent = "Start growing this crop";
+    }
+  });
+</script>
+
+</body>
+</html>

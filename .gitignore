@@ -1,0 +1,7 @@
+﻿venv/
+__pycache__/
+*.pyc
+rootline.db
+.env
+.vscode/
+*.db

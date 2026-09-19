@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rootline — Market &amp; suppliers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #142016;
+    --surface: #1D2E20;
+    --surface-2: #24352A;
+    --text: #EDE9DD;
+    --text-dim: #B9C2B4;
+    --gold: #D9A441;
+    --gold-dim: #C4923A;
+    --leaf: #7FA65C;
+    --soil: #8B6142;
+    --line: rgba(237, 233, 221, 0.12);
+    --error: #C97B63;
+    --serif: 'Fraunces', serif;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 32px 100px; }
+
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 28px 0;
+  }
+
+  .logo { font-family: var(--serif); font-size: 22px; font-weight: 600; }
+  .logo span { color: var(--leaf); }
+  .logo a { text-decoration: none; }
+
+  .back-link { font-size: 14px; color: var(--text-dim); text-decoration: none; }
+
+  h1 { font-family: var(--serif); font-size: 36px; font-weight: 500; margin-top: 12px; }
+
+  .subtitle { margin-top: 8px; color: var(--text-dim); font-size: 15px; max-width: 56ch; }
+
+  .section { margin-top: 44px; }
+
+  .section-title {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .section-sub { color: var(--text-dim); font-size: 14px; margin-bottom: 18px; }
+
+  .filter-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+
+  .filter-row input, .filter-row select {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    padding: 10px 14px;
+    border-radius: 7px;
+    outline: none;
+  }
+
+  .filter-row input:focus, .filter-row select:focus { border-color: var(--gold); }
+
+  .filter-row input { flex: 1; min-width: 160px; }
+
+  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+
+  .chip {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    color: var(--text-dim);
+    font-size: 13px;
+    padding: 7px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+
+  .chip.active { background: var(--gold); color: #1A1408; border-color: var(--gold); }
+
+  .price-table { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+
+  .price-row:last-child { border-bottom: none; }
+
+  .price-row .crop-name { font-weight: 500; }
+  .price-row .region { color: var(--text-dim); font-size: 13px; margin-left: 8px; }
+  .price-row .price { font-family: var(--serif); font-size: 16px; }
+
+  .supplier-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .supplier-card .supplier-name { font-weight: 500; font-size: 15px; }
+  .supplier-card .supplier-meta { font-size: 13px; color: var(--text-dim); margin-top: 3px; }
+
+  .supplier-tag {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--surface-2);
+    color: var(--leaf);
+    white-space: nowrap;
+  }
+
+  .status-msg { color: var(--text-dim); font-size: 14px; margin-top: 4px; }
+
+  .btn {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 11px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-primary { background: var(--gold); color: #1A1408; }
+  .btn-primary:hover { background: var(--gold-dim); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* ---------- PROFILE CHIP ---------- */
+  .profile-chip {
+    display: flex;
+    position: fixed;
+    left: 20px;
+    bottom: 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 16px 8px 8px;
+    align-items: center;
+    gap: 10px;
+    z-index: 90;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  }
+
+  .profile-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--gold); color: #1A1408;
+    font-family: var(--serif); font-weight: 600; font-size: 15px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .profile-name { font-size: 14px; font-weight: 500; white-space: nowrap; }
+
+  .profile-logout {
+    font-size: 12px; color: var(--text-dim); text-decoration: none;
+    border-left: 1px solid var(--line); padding-left: 10px; margin-left: 2px; white-space: nowrap;
+  }
+
+  .profile-logout:hover { color: var(--text); }
+
+  @media (max-width: 560px) {
+    .supplier-card { flex-direction: column; align-items: stretch; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <div class="logo"><a href="index.html">root<span>line</span></a></div>
+    <a href="index.html" class="back-link">&larr; Back home</a>
+  </nav>
+
+  <h1>Market &amp; suppliers</h1>
+  <p class="subtitle">Check current prices before you decide what to sell, and find nearby places to buy seeds, fertilizer, or equipment.</p>
+
+  <div class="section">
+    <div class="section-title">Market prices</div>
+    <div class="section-sub">Search by crop or region.</div>
+    <div class="filter-row">
+      <input type="text" id="price-crop-filter" placeholder="Crop (e.g. Tomato)" />
+      <input type="text" id="price-region-filter" placeholder="Region (e.g. Chennai)" />
+      <button class="btn btn-primary" id="price-search-btn">Search</button>
+    </div>
+    <p class="status-msg" id="price-status">Loading prices…</p>
+    <div class="price-table" id="price-table"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Suppliers near you</div>
+    <div class="section-sub">Fertilizer, seeds, and equipment — sorted by distance.</div>
+    <div class="chip-row" id="supplier-type-filter">
+      <div class="chip active" data-type="">All</div>
+      <div class="chip" data-type="fertilizer">Fertilizer</div>
+      <div class="chip" data-type="seed">Seeds</div>
+      <div class="chip" data-type="equipment">Equipment</div>
+    </div>
+    <p class="status-msg" id="supplier-status">Click below to find suppliers near you.</p>
+    <button class="btn btn-primary" id="find-suppliers-btn">Use my location</button>
+    <div id="supplier-list" style="margin-top: 14px;"></div>
+  </div>
+</div>
+
+<div class="profile-chip" id="profile-chip">
+  <div class="profile-avatar" id="profile-avatar">R</div>
+  <div class="profile-name" id="profile-name">Grower</div>
+  <a href="#" class="profile-logout" id="profile-logout-btn">Log out</a>
+</div>
+
+<script>
+  const API_BASE = "http://127.0.0.1:8000";
+  let currentSupplierType = "";
+  let lastKnownCoords = null;
+
+  // ---------- require a logged-in user ----------
+  function requireAuth() {
+    const savedUserId = localStorage.getItem("rootline_user_id");
+    if (!savedUserId) {
+      window.location.href = "index.html?login=1";
+      return false;
+    }
+    const name = localStorage.getItem("rootline_name") || "Grower";
+    document.getElementById("profile-name").textContent = name;
+    document.getElementById("profile-avatar").textContent = name.charAt(0).toUpperCase();
+    return true;
+  }
+
+  document.getElementById("profile-logout-btn").addEventListener("click", (e) => {
+    e.preventDefault();
+    localStorage.removeItem("rootline_user_id");
+    localStorage.removeItem("rootline_name");
+    localStorage.removeItem("rootline_token");
+    window.location.href = "index.html";
+  });
+
+  // ---------- market prices ----------
+  async function loadPrices() {
+    const statusEl = document.getElementById("price-status");
+    const tableEl = document.getElementById("price-table");
+    const crop = document.getElementById("price-crop-filter").value.trim();
+    const region = document.getElementById("price-region-filter").value.trim();
+
+    statusEl.style.display = "block";
+    statusEl.textContent = "Loading prices…";
+    tableEl.innerHTML = "";
+
+    try {
+      const qs = new URLSearchParams();
+      if (crop) qs.set("crop", crop);
+      if (region) qs.set("region", region);
+
+      const res = await fetch(`${API_BASE}/market/prices?${qs.toString()}`);
+      if (!res.ok) throw new Error("Could not load market prices.");
+      const prices = await res.json();
+
+      if (prices.length === 0) {
+        statusEl.textContent = "No prices found for that search.";
+        return;
+      }
+
+      statusEl.style.display = "none";
+      tableEl.innerHTML = prices.map(p => `
+        <div class="price-row">
+          <div>
+            <span class="crop-name">${p.crop_name}</span>
+            <span class="region">${p.region}</span>
+          </div>
+          <div class="price">₹${p.price_per_kg} / kg</div>
+        </div>
+      `).join("");
+    } catch (err) {
+      statusEl.textContent = err.message + " Make sure the backend is running at " + API_BASE + ".";
+    }
+  }
+
+  document.getElementById("price-search-btn").addEventListener("click", loadPrices);
+  document.getElementById("price-crop-filter").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") loadPrices();
+  });
+  document.getElementById("price-region-filter").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") loadPrices();
+  });
+
+  // ---------- suppliers ----------
+  document.querySelectorAll("#supplier-type-filter .chip").forEach(chip => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll("#supplier-type-filter .chip").forEach(c => c.classList.remove("active"));
+      chip.classList.add("active");
+      currentSupplierType = chip.dataset.type;
+      if (lastKnownCoords) loadSuppliers(lastKnownCoords.lat, lastKnownCoords.lng);
+    });
+  });
+
+  document.getElementById("find-suppliers-btn").addEventListener("click", () => {
+    const statusEl = document.getElementById("supplier-status");
+    const btn = document.getElementById("find-suppliers-btn");
+
+    if (!navigator.geolocation) {
+      statusEl.textContent = "Your browser doesn't support location access.";
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Finding your location...";
+    statusEl.textContent = "Requesting location access…";
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        lastKnownCoords = { lat: position.coords.latitude, lng: position.coords.longitude };
+        loadSuppliers(lastKnownCoords.lat, lastKnownCoords.lng);
+        btn.disabled = false;
+        btn.textContent = "Refresh my location";
+      },
+      (err) => {
+        statusEl.textContent = "Could not access your location. You can allow location access in your browser and try again.";
+        btn.disabled = false;
+        btn.textContent = "Use my location";
+      }
+    );
+  });
+
+  function distanceLabel(km) {
+    if (km < 1) return `${Math.round(km * 1000)} m away`;
+    return `${km.toFixed(1)} km away`;
+  }
+
+  async function loadSuppliers(lat, lng) {
+    const statusEl = document.getElementById("supplier-status");
+    const listEl = document.getElementById("supplier-list");
+    statusEl.style.display = "block";
+    statusEl.textContent = "Looking for suppliers near you…";
+    listEl.innerHTML = "";
+
+    try {
+      const qs = new URLSearchParams({ lat, lng, radius_km: 25 });
+      if (currentSupplierType) qs.set("type", currentSupplierType);
+
+      const res = await fetch(`${API_BASE}/suppliers?${qs.toString()}`);
+      if (!res.ok) throw new Error("Could not load suppliers.");
+      const suppliers = await res.json();
+
+      if (suppliers.length === 0) {
+        statusEl.textContent = "No suppliers found nearby yet.";
+        return;
+      }
+
+      statusEl.style.display = "none";
+      listEl.innerHTML = suppliers.map(s => {
+        const dKm = haversine(lat, lng, s.lat, s.lng);
+        return `
+          <div class="supplier-card">
+            <div>
+              <div class="supplier-name">${s.name}</div>
+              <div class="supplier-meta">${s.address || ""} · ${distanceLabel(dKm)}</div>
+            </div>
+            <div class="supplier-tag">${s.type}</div>
+          </div>
+        `;
+      }).join("");
+    } catch (err) {
+      statusEl.textContent = err.message + " Make sure the backend is running at " + API_BASE + ".";
+    }
+  }
+
+  // Client-side distance display only — the backend already filters/sorts by distance server-side.
+  function haversine(lat1, lng1, lat2, lng2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  }
+
+  if (requireAuth()) {
+    loadPrices();
+  }
+</script>
+
+</body>
+</html>
